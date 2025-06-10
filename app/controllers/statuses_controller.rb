@@ -17,6 +17,7 @@ class StatusesController < ApplicationController
     # TODO: List all statuses in paginated view
     @team_statuses = @team&.previous_statuses(before: "some-date", after: "other-date")
   end
+
   def create
     status = Status.new(user: Current.user, team: @team, id: SecureRandom.uuid)
     status.update_sections(params[:sections])

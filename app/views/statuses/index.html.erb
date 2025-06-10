@@ -19,29 +19,29 @@
 <% else %>
 
   <div class="grid grid-cols-5 gap-8">
-    <section class="col-span-2 flex flex-col gap-4">
-      <div class="flex flex-col gap-4">
+    <% if @status.present? %>
+      <section class="col-span-2 flex flex-col gap-4">
+        <div class="flex flex-col gap-4">
+            <details <%= @status.created_at.blank? ? 'open' : nil %>>
+              <summary>Today's Status</summary>
 
-        <details <%= @status.created_at.blank? ? 'open' : nil %>>
-          <summary>Today's Status</summary>
+              <div class="mt-4">
+                <%= render StatusInputComponent.new(status: @status || @draft_status) %>
+              </div>
+            </details>
 
-          <div class="mt-4">
-            <%= render StatusInputComponent.new(status: @status || @draft_status) %>
-          </div>
-        </details>
+            <% if @status.created_at.present? %>
+              <details <%= @status.created_at.present? ? 'open' : nil %>>
+                <summary>Tomorrow's Status (Draft)</summary>
 
-        <% if @status.created_at.present? %>
-          <details <%= @status.created_at.present? ? 'open' : nil %>>
-            <summary>Tomorrow's Status (Draft)</summary>
-
-            <div class="mt-4">
-              <%= render StatusInputComponent.new(status: @draft_status, is_draft: true) %>
-            </div>
-          </details>
-        <% end %>
-
-      </div>
-    </section>
+                <div class="mt-4">
+                  <%= render StatusInputComponent.new(status: @draft_status, is_draft: true) %>
+                </div>
+              </details>
+            <% end %>
+        </div>
+      </section>
+    <% end %>
 
     <section class="col-span-3 flex flex-col gap-4" data-controller="show-hide">
       <header class="flex flex-row justify-between">
