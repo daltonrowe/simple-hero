@@ -1,0 +1,6 @@
+slack:
+  client_id: "<%= ENV.fetch('SLACK_CLIENT_ID', '') %>"
+  client_secret: "<%= ENV.fetch('SLACK_CLIENT_SECRET', '') %>"
+  signing_secret: "<%= ENV.fetch('SLACK_SIGNING_SECRET', '') %>"
+  verification_token: "<%= ENV.fetch('SLACK_VERIFICATION_TOKEN', '') %>"
+  oauth_scope: "<%= JSON.parse(File.read('slack-app-manifest.json')).dig('oauth_config', 'scopes', 'bot').join(',') %>"

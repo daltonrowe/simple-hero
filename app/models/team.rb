@@ -1,12 +1,15 @@
 class Team < ApplicationRecord
-  belongs_to :user
+  belongs_to :user, optional: true
   has_many :seats, dependent: :destroy
   has_many :pending_seats, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 120 }
+  validates_uniqueness_of :token, message: 'has already been used'
 
   alias_attribute :original_end_of_day, :end_of_day
   alias_attribute :original_notifaction_time, :notifaction_time
+
+  scope :active, -> { where(active: true) }
 
   # metadata json:
   # ticket_link
@@ -72,5 +75,42 @@ class Team < ApplicationRecord
 
   def member_count
     self.seats.length + 1
+  end
+
+  def deactivate!
+    update!(active: false)
+  end
+
+  def activate!(token)
+    update!(active: true, token: token)
+  end
+
+  def ping!
+    client = Slack::Web::Client.new(token: token)
+
+    auth = client.auth_test
+
+    presence = begin
+                 client.users_getPresence(user: auth['user_id'])
+               rescue Slack::Web::Api::Errors::MissingScope
+                 nil
+               end
+
+    {
+      auth: auth,
+      presence: presence
+    }
+  end
+
+  def ping_if_active!
+    return unless active?
+
+    ping!
+  rescue Slack::Web::Api::Errors::SlackError => e
+    logger.warn "Active team #{self} ping, #{e.message}."
+    case e.message
+    when 'account_inactive', 'invalid_auth'
+      deactivate!
+    end
   end
 end

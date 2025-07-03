@@ -22,4 +22,12 @@ Rails.application.routes.draw do
   get "/dashboard/:team_id", to: "dashboard#index"
 
   get "up" => "rails/health#show", as: :rails_health_check
+
+  namespace :slack do
+    get 'create_team', to: 'teams#create'
+
+    namespace :commands do
+      post 'simple_team', to: 'simple_team#index'
+    end
+  end
 end
