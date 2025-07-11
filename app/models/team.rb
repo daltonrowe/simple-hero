@@ -1,4 +1,5 @@
 class Team < ApplicationRecord
+  belongs_to :slack_installation, optional: true
   belongs_to :user
   has_many :seats, dependent: :destroy
   has_many :pending_seats, dependent: :destroy
