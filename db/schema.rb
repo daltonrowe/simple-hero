@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_08_062634) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_04_114540) do
   create_table "pending_seats", force: :cascade do |t|
     t.string "team_id"
     t.string "email_address"
@@ -41,6 +41,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_062634) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "slack_installations", id: :string, force: :cascade do |t|
+    t.string "user_id"
+    t.string "slack_team_id"
+    t.string "name"
+    t.string "domain"
+    t.string "token"
+    t.string "oauth_scope"
+    t.string "oauth_version", default: "v2", null: false
+    t.string "bot_user_id"
+    t.string "activated_user_id"
+    t.string "activated_user_access_token"
+    t.boolean "active", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_slack_installations_on_user_id"
+  end
+
+  create_table "slack_users", id: :string, force: :cascade do |t|
+    t.string "user_id"
+    t.string "slack_user_id"
+    t.index ["user_id"], name: "index_slack_users_on_user_id"
+  end
+
   create_table "statuses", id: :string, force: :cascade do |t|
     t.string "team_id", null: false
     t.string "user_id", null: false
@@ -62,6 +85,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_062634) do
     t.json "metadata", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slack_installation_id"
+    t.index ["slack_installation_id"], name: "index_teams_on_slack_installation_id"
     t.index ["user_id"], name: "index_teams_on_user_id"
   end
 
@@ -72,6 +97,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_062634) do
     t.datetime "confirmed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slack_id"
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
@@ -79,7 +105,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_08_062634) do
   add_foreign_key "seats", "teams"
   add_foreign_key "seats", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "slack_installations", "users"
+  add_foreign_key "slack_users", "users"
   add_foreign_key "statuses", "teams"
   add_foreign_key "statuses", "users"
+  add_foreign_key "teams", "slack_installations"
   add_foreign_key "teams", "users"
 end

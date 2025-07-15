@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+_fixture:
+  ignore:
+    - base
+
+base: &base
+  user: member
+  domain: "www.example.com"
+  oauth_scope: "users:read"
+  bot_user_id: "123"
+  activated_user_id: "789"
+  activated_user_access_token: "abc"
+
+default:
+  <<: *base
+  slack_team_id: <%= SecureRandom.uuid %>
+  name: "Default Slack App"
+  token: <%= SecureRandom.uuid %>
+
+inactive:
+  <<: *base
+  slack_team_id: <%= SecureRandom.uuid %>
+  name: "Inactive Slack App"
+  token: <%= SecureRandom.uuid %>
+  active: false

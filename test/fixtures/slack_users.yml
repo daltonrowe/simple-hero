@@ -1,0 +1,3 @@
+default:
+  user: member
+  slack_user_id: <%= SecureRandom.uuid %>
